@@ -15,6 +15,12 @@ export function getApiBase() {
   return DEFAULT_API_BASE
 }
 
+function joinUrl(base, path) {
+  const b = (base || '').replace(/\/+$/, '')
+  const p = (path || '').startsWith('/') ? path : `/${path}`
+  return `${b}${p}`
+}
+
 export function fileUrl(filePath) {
   // filePath is stored like: 'uploads/photos/<file>'
   // If API base is relative (e.g. '/api'), resolve against current origin.
@@ -31,15 +37,29 @@ export function authHeader() {
 }
 
 async function request(path, { method = 'GET', body, headers = {} } = {}) {
-  const url = `${getApiBase()}${path}`
-  const res = await fetch(url, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      ...headers,
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  })
+  const apiBase = getApiBase()
+  const url = joinUrl(apiBase, path)
+
+  let res
+  try {
+    res = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    })
+  } catch (e) {
+    // Typically CORS, mixed-content (https page calling http API), DNS, or backend down.
+    const isHttpsPage = typeof window !== 'undefined' && window.location?.protocol === 'https:'
+    const baseLooksHttp = typeof apiBase === 'string' && apiBase.trim().toLowerCase().startsWith('http:')
+    const hint =
+      isHttpsPage && baseLooksHttp
+        ? 'Your site is on https but API_BASE is http (mixed content). Use an https backend URL.'
+        : 'Check that API_BASE points to a reachable backend and that backend CORS allows this site.'
+    throw new Error(`Network error contacting API at ${url}. API_BASE=${apiBase}. ${hint}`)
+  }
 
   if (!res.ok) {
     const msg = await safeError(res)

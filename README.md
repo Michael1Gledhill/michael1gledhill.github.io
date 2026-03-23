@@ -60,6 +60,16 @@ Also set the backend CORS env `APP_CORS_ORIGINS` to include your Pages origin, e
 
 - `https://<your-username>.github.io`
 
+### If you see “NetworkError” / “Failed to fetch”
+
+This usually means one of:
+
+- The backend URL is wrong or the backend is down.
+- **CORS**: your backend isn’t allowing requests from your Pages origin.
+- **Mixed content**: your site is served over **https** (GitHub Pages) but your API base is **http**. Browsers block https pages from calling http APIs.
+
+Fix: deploy the backend on **https** and set `VITE_API_BASE` to an `https://...` URL, and ensure `APP_CORS_ORIGINS` includes your Pages origin.
+
 ## Notes
 
 GitHub Pages can only host the **static frontend**. The FastAPI backend must be hosted separately for production.

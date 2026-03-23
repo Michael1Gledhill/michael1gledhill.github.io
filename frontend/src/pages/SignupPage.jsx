@@ -30,6 +30,10 @@ export default function SignupPage() {
       setTimeout(() => navigate('/login'), 900)
     } catch (err) {
       const msg = err?.message || 'Signup failed'
+      if (msg.toLowerCase().includes('network error contacting api') || msg.toLowerCase().includes('failed to fetch') || msg.toLowerCase().includes('networkerror')) {
+        setError(msg)
+        return
+      }
       if (
         (msg.includes('405') || msg.toLowerCase().includes('method not allowed')) &&
         window.location.hostname.endsWith('github.io')
