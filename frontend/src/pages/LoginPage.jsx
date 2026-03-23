@@ -21,7 +21,17 @@ export default function LoginPage() {
       setSession({ token: data.access_token, user: data.user })
       navigate('/')
     } catch (err) {
-      setError(err?.message || 'Login failed')
+      const msg = err?.message || 'Login failed'
+      if (
+        (msg.includes('405') || msg.toLowerCase().includes('method not allowed')) &&
+        window.location.hostname.endsWith('github.io')
+      ) {
+        setError(
+          'Login failed (405). GitHub Pages is static and cannot handle POST /api/* requests. Configure your backend URL via repository variable/secret VITE_API_BASE (or edit config/config.js), then redeploy.'
+        )
+      } else {
+        setError(msg)
+      }
     } finally {
       setBusy(false)
     }

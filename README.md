@@ -38,6 +38,24 @@ GitHub Pages deployment is preserved.
 
 The workflow builds the React frontend and copies the output into `teton/1.6/`, then uploads that folder as the Pages artifact.
 
+### Why you see 405 on Pages login
+
+GitHub Pages is **static hosting**. If the frontend tries to `POST /api/auth/login` against the GitHub Pages origin, GitHub will respond **405 Method Not Allowed**.
+
+To make login work on GitHub Pages, you must point the frontend at a **real FastAPI backend** hosted elsewhere.
+
+### Configure the backend URL for Pages
+
+Set a **Repository Variable** (recommended) or **Repository Secret** named `VITE_API_BASE` to your backend URL, for example:
+
+- `https://your-backend.onrender.com`
+
+During the GitHub Actions build, it generates `teton/1.6/config/config.js` with that value.
+
+Also set the backend CORS env `APP_CORS_ORIGINS` to include your Pages origin, e.g.:
+
+- `https://<your-username>.github.io`
+
 ## Notes
 
 GitHub Pages can only host the **static frontend**. The FastAPI backend must be hosted separately for production.

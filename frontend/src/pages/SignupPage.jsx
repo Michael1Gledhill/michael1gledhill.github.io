@@ -29,7 +29,17 @@ export default function SignupPage() {
       setMsg(data.message)
       setTimeout(() => navigate('/login'), 900)
     } catch (err) {
-      setError(err?.message || 'Signup failed')
+      const msg = err?.message || 'Signup failed'
+      if (
+        (msg.includes('405') || msg.toLowerCase().includes('method not allowed')) &&
+        window.location.hostname.endsWith('github.io')
+      ) {
+        setError(
+          'Signup failed (405). GitHub Pages is static and cannot handle POST /api/* requests. Configure your backend URL via repository variable/secret VITE_API_BASE (or edit config/config.js), then redeploy.'
+        )
+      } else {
+        setError(msg)
+      }
     } finally {
       setBusy(false)
     }

@@ -1,4 +1,15 @@
-const DEFAULT_API_BASE = import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000'
+function runtimeApiBase() {
+  try {
+    // eslint-disable-next-line no-undef
+    const fromWindow = window?.__APP_CONFIG__?.API_BASE
+    if (typeof fromWindow === 'string' && fromWindow.trim()) return fromWindow.trim()
+  } catch {
+    // ignore
+  }
+  return null
+}
+
+const DEFAULT_API_BASE = runtimeApiBase() || import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000'
 
 export function getApiBase() {
   return DEFAULT_API_BASE
