@@ -69,6 +69,12 @@ jobs:
         mkdir -p teton/1.6
         cp -R frontend/dist/* teton/1.6/
 
+    - name: Upload Pages artifact
+      uses: actions/upload-pages-artifact@v3.0.1
+      with:
+        # Upload only teton/1.6
+        path: 'teton/1.6'
+
   analyze:
     needs: build
     name: Analyze
@@ -133,15 +139,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4.1.2
       - name: Setup Pages
         uses: actions/configure-pages@v4.0.0
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3.0.1
-        with:
-          # Upload only teton/1.6
-          path: 'teton/1.6'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4.0.5
