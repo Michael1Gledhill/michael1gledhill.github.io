@@ -31,10 +31,9 @@ jobs:
       uses: actions/setup-python@v5.0.0
       with:
         python-version: "3.12"
-    - name: Install dependencies
+    - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest requests pytest-mock selenium requests-mock coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
@@ -42,16 +41,33 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Startup HTTP Server for pipeline tests
-      uses: Eun/http-server-action@v1.0.11
-      with:
-        directory: .
-        port: 5500
-        index-files: |
-          ["index.html", "index.htm"]           
-    - name: Run tests
+    - name: Run backend tests
       run: |
         pytest
+
+    - name: Set up Node 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+
+    - name: Install frontend dependencies
+      working-directory: frontend
+      run: |
+        npm ci
+
+    - name: Build frontend (GitHub Pages)
+      working-directory: frontend
+      env:
+        # In CI, point to a placeholder API URL. For local dev, frontend reads VITE_API_BASE from .env.local.
+        VITE_API_BASE: /api
+      run: |
+        npm run build
+
+    - name: Copy build to Pages folder
+      run: |
+        rm -rf teton/1.6
+        mkdir -p teton/1.6
+        cp -R frontend/dist/* teton/1.6/
 
   analyze:
     needs: build
@@ -81,6 +97,7 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
+        build-mode: none
           # If you wish to specify custom queries, you can do so here or in a config file.
           # By default, queries listed here will override any specified in a config file.
           # Prefix the list here with "+" to use these queries and those in the config file.
@@ -91,8 +108,7 @@ jobs:
   
       # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
       # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+    # For JavaScript in this repo, we don't rely on CodeQL autobuild.
   
       # ℹ️ Command-line programs to run using the OS shell.
       # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun

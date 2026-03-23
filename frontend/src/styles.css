@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+::selection {
+  background: rgba(34, 211, 238, 0.25);
+}
+
+/* Smooth-ish page transitions */
+.page {
+  animation: floatIn 450ms ease-out both;
+}
+
+.card {
+  @apply rounded-2xl border border-white/10 bg-white/5 shadow-glow backdrop-blur;
+}
+
+.cardHover {
+  @apply transition duration-200 hover:-translate-y-0.5 hover:border-cyan-300/30 hover:bg-white/10;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 font-mono text-sm text-slate-100 transition hover:bg-white/10 hover:border-cyan-300/30;
+}
+
+.btnPrimary {
+  @apply bg-gradient-to-r from-cyan-500/15 to-emerald-500/10 border-cyan-400/20 hover:border-cyan-300/40;
+}
+
+.input {
+  @apply w-full rounded-xl border border-white/10 bg-ink-900/40 px-3 py-2 font-mono text-sm text-slate-100 placeholder:text-slate-400 outline-none focus:border-cyan-300/40;
+}
+
+.muted {
+  @apply text-slate-300;
+}
+
+.kbd {
+  @apply rounded-md border border-white/10 bg-white/5 px-2 py-1 font-mono text-xs text-slate-200;
+}

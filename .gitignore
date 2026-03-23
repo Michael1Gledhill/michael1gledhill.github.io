@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Backend runtime
+backend/app.db
+backend/uploads/
+backend/.env
+
+# Node
+node_modules/
+
+# Builds
+frontend/dist/
+teton/1.6/
+
+# OS
+.DS_Store
+Thumbs.db
