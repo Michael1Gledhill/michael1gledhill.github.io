@@ -15,6 +15,10 @@ This repo is a **developer-style portfolio + gallery + journal** with:
   - Username: `admin`
   - Password: `QWERTY`
 
+If you previously signed up `admin` as a normal (unverified) user and got stuck, the backend will now **promote** that account to admin on startup **only when no admin users exist yet**.
+
+If credentials still don’t match because you have an old SQLite DB, delete `backend/app.db` and restart the backend to regenerate a fresh DB + default admin.
+
 ## Run locally
 
 ### Backend

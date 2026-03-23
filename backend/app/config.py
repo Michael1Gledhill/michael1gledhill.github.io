@@ -17,6 +17,14 @@ class Settings(BaseSettings):
     db_url: str = "sqlite+pysqlite:///./backend/app.db"
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
+    # Bootstrap admin account (dev convenience).
+    # If no admin user exists, the app will create one (or promote an existing user
+    # with the configured username). Configure these in backend/.env for production.
+    bootstrap_admin: bool = True
+    default_admin_username: str = "admin"
+    default_admin_password: str = "QWERTY"
+    reset_bootstrap_admin_password: bool = True
+
     access_token_exp_minutes: int = 60 * 8
 
     @property
