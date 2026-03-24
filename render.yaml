@@ -15,7 +15,11 @@ services:
       - key: APP_SECRET_KEY
         generateValue: true
       - key: APP_DB_URL
-        value: sqlite+pysqlite:///./backend/app.db
+        # IMPORTANT: Render free has an ephemeral filesystem.
+        # Use a managed Postgres (e.g., Supabase) and set this in the Render UI.
+        # Example:
+        # postgresql+psycopg://USER:PASSWORD@HOST:5432/DBNAME?sslmode=require
+        value: ""
       - key: APP_CORS_ORIGINS
         value: https://michael1gledhill.github.io
       - key: APP_UPLOADS_DIR
