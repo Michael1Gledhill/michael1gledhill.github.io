@@ -5,9 +5,13 @@ services:
     plan: free
     region: oregon
     autoDeploy: true
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -U pip setuptools wheel && pip install -r requirements.txt
     startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
     envVars:
+      # Render default Python (for new services) is 3.14.x as of 2026-02-11.
+      # Pin to 3.13 so dependencies like pydantic-core install from wheels (no Rust build).
+      - key: PYTHON_VERSION
+        value: 3.13.7
       - key: APP_SECRET_KEY
         generateValue: true
       - key: APP_DB_URL

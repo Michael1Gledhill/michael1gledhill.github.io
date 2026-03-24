@@ -90,6 +90,18 @@ Do this:
 
 4) Try logging in again from Pages.
 
+### Render deploy fails building pydantic-core (Rust/maturin error)
+
+Render's default Python for **new services** is currently **3.14.x**. Some dependencies (notably `pydantic-core`) might not have prebuilt wheels for 3.14 yet, which makes pip try to compile Rust during deploy.
+
+Fix: pin Render to Python **3.13**.
+
+This repo includes:
+- a `.python-version` file (`3.13`), and
+- `PYTHON_VERSION=3.13.7` in `render.yaml`
+
+After pushing those changes, trigger a **Manual Deploy** on Render.
+
 ## Notes
 
 GitHub Pages can only host the **static frontend**. The FastAPI backend must be hosted separately for production.
