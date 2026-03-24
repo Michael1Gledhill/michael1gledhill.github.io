@@ -6,6 +6,7 @@ import RequireAdmin from './routes/RequireAdmin.jsx'
 
 import LoginPage from './pages/LoginPage.jsx'
 import SignupPage from './pages/SignupPage.jsx'
+import ApiConfigPage from './pages/ApiConfigPage.jsx'
 import HomePage from './pages/HomePage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
 import GalleryPage from './pages/GalleryPage.jsx'
@@ -17,6 +18,7 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
+      <Route path="/config" element={<ApiConfigPage />} />
 
       <Route
         path="/"

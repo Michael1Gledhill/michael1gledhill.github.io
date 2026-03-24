@@ -72,6 +72,10 @@ export default function LoginPage() {
                 <Link className="font-mono text-cyan-200 hover:underline" to="/signup">
                   Sign up
                 </Link>
+                <span className="opacity-60"> · </span>
+                <Link className="font-mono text-cyan-200 hover:underline" to="/config">
+                  API settings
+                </Link>
               </div>
             </form>
           </Card>

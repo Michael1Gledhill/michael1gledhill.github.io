@@ -1,5 +1,8 @@
 function runtimeApiBase() {
   try {
+    const fromStorage = window?.localStorage?.getItem('api_base_override')
+    if (typeof fromStorage === 'string' && fromStorage.trim()) return fromStorage.trim()
+
     // eslint-disable-next-line no-undef
     const fromWindow = window?.__APP_CONFIG__?.API_BASE
     if (typeof fromWindow === 'string' && fromWindow.trim()) return fromWindow.trim()
