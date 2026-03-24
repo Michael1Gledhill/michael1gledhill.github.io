@@ -70,6 +70,26 @@ This usually means one of:
 
 Fix: deploy the backend on **https** and set `VITE_API_BASE` to an `https://...` URL, and ensure `APP_CORS_ORIGINS` includes your Pages origin.
 
+### Fixing the GitHub Pages mixed-content error (recommended path)
+
+Your GitHub Pages site is served over **https**. If `API_BASE` is `http://...` (like `http://127.0.0.1:8000`) the browser will block requests.
+
+Do this:
+
+1) Deploy the FastAPI backend to an **https** host.
+  - This repo includes a Render Blueprint at `render.yaml`.
+  - On Render, create a **New +** → **Blueprint** service from this GitHub repo.
+  - After deploy, copy the public URL (it will look like `https://<service>.onrender.com`).
+
+2) In GitHub (this repo): set `VITE_API_BASE` to your backend URL.
+  - Repo → Settings → Secrets and variables → Actions → Variables
+  - Add `VITE_API_BASE = https://<service>.onrender.com`
+
+3) Redeploy Pages (push a commit or re-run the workflow), then verify:
+  - `https://michael1gledhill.github.io/config/config.js` shows your `https://...` API base.
+
+4) Try logging in again from Pages.
+
 ## Notes
 
 GitHub Pages can only host the **static frontend**. The FastAPI backend must be hosted separately for production.
