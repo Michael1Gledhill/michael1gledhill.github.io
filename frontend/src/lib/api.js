@@ -12,7 +12,22 @@ function runtimeApiBase() {
   return null
 }
 
-const DEFAULT_API_BASE = runtimeApiBase() || import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000'
+function defaultApiBase() {
+  const configured = runtimeApiBase() || import.meta.env.VITE_API_BASE
+  if (configured) return configured
+
+  // On GitHub Pages, falling back to localhost is always wrong and often blocked by mixed-content.
+  const onGithubPages =
+    typeof window !== 'undefined' &&
+    typeof window.location?.hostname === 'string' &&
+    window.location.hostname.endsWith('github.io')
+  if (onGithubPages) return ''
+
+  // Local/dev fallback
+  return 'http://127.0.0.1:8000'
+}
+
+const DEFAULT_API_BASE = defaultApiBase()
 
 export function getApiBase() {
   return DEFAULT_API_BASE
@@ -41,6 +56,11 @@ export function authHeader() {
 
 async function request(path, { method = 'GET', body, headers = {} } = {}) {
   const apiBase = getApiBase()
+  if (!apiBase) {
+    throw new Error(
+      'Backend not configured. Set an HTTPS API Base in /#/config, or set the repository variable VITE_API_BASE and redeploy.'
+    )
+  }
   const url = joinUrl(apiBase, path)
 
   let res
