@@ -77,12 +77,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         _ensure_default_admin(app)
 
         # Ensure uploads folder exists
-        os.makedirs(os.path.join("backend", "uploads", "photos"), exist_ok=True)
+        os.makedirs(os.path.join(settings.uploads_dir, "photos"), exist_ok=True)
 
         yield
 
     # StaticFiles requires the directory to exist at mount time.
-    os.makedirs(os.path.join("backend", "uploads", "photos"), exist_ok=True)
+    os.makedirs(os.path.join(settings.uploads_dir, "photos"), exist_ok=True)
 
     app = FastAPI(title="Portfolio Hub API", version="1.0.0", lifespan=lifespan)
 
@@ -102,7 +102,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(photos.router)
 
     # Static serving for uploads (photos)
-    app.mount("/uploads", StaticFiles(directory=os.path.join("backend", "uploads")), name="uploads")
+    app.mount("/uploads", StaticFiles(directory=settings.uploads_dir), name="uploads")
 
     @app.get("/api/health")
     def health():

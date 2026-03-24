@@ -17,6 +17,11 @@ class Settings(BaseSettings):
     db_url: str = "sqlite+pysqlite:///./backend/app.db"
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
+    # Where uploaded files are stored on disk.
+    # This defaults to a repo-relative path, but in production you can set this
+    # to a persistent disk mount path (e.g. Render disk).
+    uploads_dir: str = "./backend/uploads"
+
     # Bootstrap admin account (dev convenience).
     # If no admin user exists, the app will create one (or promote an existing user
     # with the configured username). Configure these in backend/.env for production.
