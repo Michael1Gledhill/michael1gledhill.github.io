@@ -22,6 +22,13 @@ class Settings(BaseSettings):
     # to a persistent disk mount path (e.g. Render disk).
     uploads_dir: str = "./backend/uploads"
 
+    # Optional external storage for photos (recommended on hosts with ephemeral
+    # disks).
+    # If set, uploads will be stored in Cloudinary and `Photo.file_path` will
+    # contain a public HTTPS URL instead of a local `uploads/...` path.
+    cloudinary_url: str | None = None
+    cloudinary_folder: str = "portfolio-hub"
+
     # Bootstrap admin account (dev convenience).
     # If no admin user exists, the app will create one (or promote an existing user
     # with the configured username). Configure these in backend/.env for production.

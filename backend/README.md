@@ -37,3 +37,25 @@ Many free hosts (including Render free web services) use an **ephemeral filesyst
 - a SQLite database file can also be lost for the same reason
 
 If you need persistence in production, point `APP_UPLOADS_DIR` (and your DB) at a persistent volume/disk, or use external storage (S3/Cloudinary/Supabase Storage) and a managed database.
+
+## Free persistence recipe (no disk)
+
+If your host does not support persistent disks on the free tier, use:
+
+- a **managed Postgres** database (free tiers: Supabase / Neon / etc.)
+- **Cloudinary** (or similar) for photo storage
+
+### Managed DB (recommended)
+
+Set `APP_DB_URL` to a Postgres SQLAlchemy URL (example):
+
+- `postgresql+psycopg://USER:PASSWORD@HOST:5432/DBNAME?sslmode=require`
+
+### Cloudinary photos
+
+Set:
+
+- `APP_CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>`
+- `APP_CLOUDINARY_FOLDER=portfolio-hub` (optional)
+
+When Cloudinary is configured, the API stores photo files in Cloudinary and saves the returned HTTPS URL in `Photo.file_path`.

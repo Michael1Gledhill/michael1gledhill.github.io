@@ -41,6 +41,8 @@ class Photo(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     file_path: Mapped[str] = mapped_column(String(500), nullable=False)
+    # For external storage providers (e.g. Cloudinary public_id). Optional.
+    storage_key: Mapped[str | None] = mapped_column(String(500), nullable=True)
     uploaded_at: Mapped[dt.datetime] = mapped_column(
         DateTime,
         default=lambda: dt.datetime.now(dt.timezone.utc),

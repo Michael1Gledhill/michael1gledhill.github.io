@@ -105,3 +105,13 @@ After pushing those changes, trigger a **Manual Deploy** on Render.
 ## Notes
 
 GitHub Pages can only host the **static frontend**. The FastAPI backend must be hosted separately for production.
+
+### Persistence on free hosting
+
+Many free hosting tiers (including Render free web services) use an **ephemeral filesystem**.
+If you use the default SQLite DB + local `backend/uploads`, your data and photos can disappear after a restart/redeploy.
+
+If you don't have persistent disks available, use:
+
+- a managed database (e.g. Supabase/Neon Postgres) via `APP_DB_URL`
+- external file storage for photos (Cloudinary) via `APP_CLOUDINARY_URL`

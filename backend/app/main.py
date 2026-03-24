@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select
 
 from backend.app.config import Settings
-from backend.app.db import create_engine_from_url, create_sessionmaker
+from backend.app.db import create_engine_from_url, create_sessionmaker, ensure_schema
 from backend.app.models import Base, User
 from backend.app.routers import admin, auth, photos, posts, profile
 from backend.app.security import hash_password, verify_password
@@ -69,6 +69,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def lifespan(app: FastAPI):
         # Create schema
         Base.metadata.create_all(bind=engine)
+        ensure_schema(engine)
 
         app.state.settings = settings
         app.state.engine = engine
