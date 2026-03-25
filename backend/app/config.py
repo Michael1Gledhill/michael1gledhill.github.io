@@ -15,6 +15,11 @@ class Settings(BaseSettings):
 
     secret_key: str = "dev-insecure-secret"
     db_url: str = "sqlite+pysqlite:///./backend/app.db"
+    # Some hosts (including Render) may not have IPv6 egress. Supabase often
+    # resolves to an IPv6 address first, which can cause "Network is unreachable".
+    # When true, the backend will attempt to resolve an IPv4 address and connect
+    # via hostaddr.
+    prefer_ipv4: bool = True
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
     # Where uploaded files are stored on disk.

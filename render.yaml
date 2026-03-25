@@ -22,6 +22,8 @@ services:
         value: ""
       - key: APP_CORS_ORIGINS
         value: https://michael1gledhill.github.io
+      - key: APP_PREFER_IPV4
+        value: true
       - key: APP_UPLOADS_DIR
         value: ./backend/uploads
       - key: APP_CLOUDINARY_URL

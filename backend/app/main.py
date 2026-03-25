@@ -62,7 +62,7 @@ def _ensure_default_admin(app: FastAPI) -> None:
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings()
 
-    engine = create_engine_from_url(settings.db_url)
+    engine = create_engine_from_url(settings.db_url, prefer_ipv4=settings.prefer_ipv4)
     SessionLocal = create_sessionmaker(engine)
 
     @asynccontextmanager

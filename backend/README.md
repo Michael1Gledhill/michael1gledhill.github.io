@@ -51,6 +51,16 @@ Set `APP_DB_URL` to a Postgres SQLAlchemy URL (example):
 
 - `postgresql+psycopg://USER:PASSWORD@HOST:5432/DBNAME?sslmode=require`
 
+#### Render + Supabase IPv6 note
+
+If your Render logs show an error like:
+
+`connection to server at "2600:..." failed: Network is unreachable`
+
+that means the DNS name resolved to IPv6 first but the environment can't reach IPv6.
+This backend defaults `APP_PREFER_IPV4=true` to resolve an IPv4 address and connect
+via `hostaddr`.
+
 ### Cloudinary photos
 
 Set:
