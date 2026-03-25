@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,6 +22,17 @@ class Settings(BaseSettings):
     # via hostaddr.
     prefer_ipv4: bool = True
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+
+    @field_validator("db_url", mode="before")
+    @classmethod
+    def _normalize_db_url(cls, v: str | None):
+        # Render Blueprint env vars can accidentally be set to an empty string.
+        # Treat empty as "unset" and fall back to the default SQLite URL.
+        if v is None:
+            return v
+        if isinstance(v, str) and not v.strip():
+            return "sqlite+pysqlite:///./backend/app.db"
+        return v
 
     # Where uploaded files are stored on disk.
     # This defaults to a repo-relative path, but in production you can set this
