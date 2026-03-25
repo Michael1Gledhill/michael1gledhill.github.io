@@ -55,15 +55,39 @@ def ensure_schema(engine) -> None:
     """Apply tiny, safe schema upgrades without a full migrations framework."""
 
     inspector = inspect(engine)
+
+    # Posts upgrades
+    if inspector.has_table("posts"):
+        post_cols = {c["name"] for c in inspector.get_columns("posts")}
+        if "published_at" not in post_cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE posts ADD COLUMN published_at TIMESTAMP"))
+                conn.execute(
+                    text(
+                        "UPDATE posts SET published_at = created_at "
+                        "WHERE published_at IS NULL"
+                    )
+                )
+    # Photos upgrades
     if not inspector.has_table("photos"):
         return
 
     cols = {c["name"] for c in inspector.get_columns("photos")}
-    if "storage_key" not in cols:
-        with engine.begin() as conn:
+    with engine.begin() as conn:
+        if "storage_key" not in cols:
+            conn.execute(text("ALTER TABLE photos ADD COLUMN storage_key VARCHAR(500)"))
+
+        if "taken_at" not in cols:
+            conn.execute(text("ALTER TABLE photos ADD COLUMN taken_at TIMESTAMP"))
             conn.execute(
-                text("ALTER TABLE photos ADD COLUMN storage_key VARCHAR(500)")
+                text(
+                    "UPDATE photos SET taken_at = uploaded_at "
+                    "WHERE taken_at IS NULL"
+                )
             )
+
+        if "post_id" not in cols:
+            conn.execute(text("ALTER TABLE photos ADD COLUMN post_id INTEGER"))
 
 
 def create_sessionmaker(engine):

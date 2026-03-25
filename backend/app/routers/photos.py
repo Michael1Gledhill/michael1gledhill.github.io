@@ -10,13 +10,13 @@ from sqlalchemy.orm import Session
 
 from backend.app.config import Settings
 from backend.app.deps import (
-    get_current_user,
     get_db,
     get_settings,
     require_admin,
 )
 from backend.app.models import Photo
-from backend.app.schemas import PhotoOut
+from backend.app.schemas import PhotoAdminPatch, PhotoOut
+from backend.app.tagging import get_or_create_tags
 
 router = APIRouter(prefix="/api/photos", tags=["photos"])
 
@@ -40,11 +40,17 @@ def _ensure_upload_dir(settings: Settings) -> None:
 @router.get("/", response_model=list[PhotoOut])
 def list_photos(
     db: Session = Depends(get_db),
-    _user=Depends(get_current_user),
 ):
-    photos = db.scalars(select(Photo).order_by(Photo.uploaded_at.desc())).all()
+    photos = db.scalars(select(Photo).order_by(Photo.taken_at.desc())).all()
     return [
-        PhotoOut(id=p.id, file_path=p.file_path, uploaded_at=p.uploaded_at)
+        PhotoOut(
+            id=p.id,
+            file_path=p.file_path,
+            uploaded_at=p.uploaded_at,
+            taken_at=p.taken_at,
+            post_id=p.post_id,
+            tags=[t.name for t in (p.tags or [])],
+        )
         for p in photos
     ]
 
@@ -56,6 +62,7 @@ def upload_photo(
     _admin=Depends(require_admin),
     settings: Settings = Depends(get_settings),
 ):
+    now = dt.datetime.now(dt.timezone.utc)
     use_cloudinary = bool(settings.cloudinary_url)
     if not use_cloudinary:
         _ensure_upload_dir(settings)
@@ -109,7 +116,8 @@ def upload_photo(
         photo = Photo(
             file_path=str(url),
             storage_key=str(public_id),
-            uploaded_at=dt.datetime.now(dt.timezone.utc),
+            uploaded_at=now,
+            taken_at=now,
         )
     else:
         safe_name = f"{uuid.uuid4().hex}{ext}"
@@ -120,10 +128,7 @@ def upload_photo(
         with open(abs_path, "wb") as f:
             f.write(file.file.read())
 
-        photo = Photo(
-            file_path=rel_path,
-            uploaded_at=dt.datetime.now(dt.timezone.utc),
-        )
+        photo = Photo(file_path=rel_path, uploaded_at=now, taken_at=now)
     db.add(photo)
     db.commit()
     db.refresh(photo)
@@ -132,6 +137,47 @@ def upload_photo(
         id=photo.id,
         file_path=photo.file_path,
         uploaded_at=photo.uploaded_at,
+        taken_at=photo.taken_at,
+        post_id=photo.post_id,
+        tags=[t.name for t in (photo.tags or [])],
+    )
+
+
+@router.patch("/{photo_id}", response_model=PhotoOut)
+def patch_photo(
+    photo_id: int,
+    payload: PhotoAdminPatch,
+    db: Session = Depends(get_db),
+    _admin=Depends(require_admin),
+):
+    photo = db.scalar(select(Photo).where(Photo.id == photo_id))
+    if photo is None:
+        raise HTTPException(status_code=404, detail="Photo not found")
+
+    fields_set = payload.model_fields_set
+
+    if "taken_at" in fields_set:
+        photo.taken_at = payload.taken_at
+
+    # Allow clearing the link by explicitly passing null.
+    if "post_id" in fields_set:
+        photo.post_id = payload.post_id
+
+    # Allow clearing tags by explicitly passing null.
+    if "tags" in fields_set:
+        photo.tags = get_or_create_tags(db, payload.tags or [])
+
+    db.add(photo)
+    db.commit()
+    db.refresh(photo)
+
+    return PhotoOut(
+        id=photo.id,
+        file_path=photo.file_path,
+        uploaded_at=photo.uploaded_at,
+        taken_at=photo.taken_at,
+        post_id=photo.post_id,
+        tags=[t.name for t in (photo.tags or [])],
     )
 
 

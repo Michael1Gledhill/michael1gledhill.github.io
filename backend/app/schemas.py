@@ -44,24 +44,48 @@ class UserAdminPatch(BaseModel):
     is_admin: bool | None = None
 
 
+class TagOut(BaseModel):
+    id: int
+    name: str
+
+
+class TagCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=64)
+
+
 class PostOut(BaseModel):
     id: int
     title: str
     content: str
     created_at: dt.datetime
+    published_at: dt.datetime
+    tags: list[str] = []
 
 
 class PostCreate(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     content: str = Field(min_length=1)
+    published_at: dt.datetime | None = None
+    tags: list[str] = []
 
 
 class PostUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=200)
     content: str | None = Field(default=None, min_length=1)
+    published_at: dt.datetime | None = None
+    tags: list[str] | None = None
 
 
 class PhotoOut(BaseModel):
     id: int
     file_path: str
     uploaded_at: dt.datetime
+    taken_at: dt.datetime
+    post_id: int | None = None
+    tags: list[str] = []
+
+
+class PhotoAdminPatch(BaseModel):
+    taken_at: dt.datetime | None = None
+    post_id: int | None = None
+    tags: list[str] | None = None
