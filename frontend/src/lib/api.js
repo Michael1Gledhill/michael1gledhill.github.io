@@ -112,13 +112,16 @@ export const api = {
   meProfile: () => request('/api/profile/', { headers: authHeader() }),
   updateProfile: (payload) => request('/api/profile/', { method: 'PUT', body: payload, headers: authHeader() }),
 
-  listPosts: () => request('/api/posts/', { headers: authHeader() }),
-  getPost: (id) => request(`/api/posts/${id}`, { headers: authHeader() }),
+  // Public reads
+  listPosts: () => request('/api/posts/'),
+  getPost: (id) => request(`/api/posts/${id}`),
   createPost: (payload) => request('/api/posts/', { method: 'POST', body: payload, headers: authHeader() }),
   updatePost: (id, payload) => request(`/api/posts/${id}`, { method: 'PUT', body: payload, headers: authHeader() }),
   deletePost: (id) => request(`/api/posts/${id}`, { method: 'DELETE', headers: authHeader() }),
 
-  listPhotos: () => request('/api/photos/', { headers: authHeader() }),
+  // Public reads
+  listPhotos: () => request('/api/photos/'),
+  patchPhoto: (id, payload) => request(`/api/photos/${id}`, { method: 'PATCH', body: payload, headers: authHeader() }),
   deletePhoto: (id) => request(`/api/photos/${id}`, { method: 'DELETE', headers: authHeader() }),
 
   adminListUsers: () => request('/api/admin/users', { headers: authHeader() }),

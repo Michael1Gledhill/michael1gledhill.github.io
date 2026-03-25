@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Card from '../components/Card.jsx'
 import TypingHeading from '../components/TypingHeading.jsx'
 import { api } from '../lib/api.js'
@@ -7,6 +7,7 @@ import { setSession } from '../lib/auth.js'
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const loc = useLocation()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -19,7 +20,8 @@ export default function LoginPage() {
     try {
       const data = await api.login({ username, password })
       setSession({ token: data.access_token, user: data.user })
-      navigate('/')
+      const to = loc?.state?.from || '/journal'
+      navigate(to)
     } catch (err) {
       const msg = err?.message || 'Login failed'
       if (msg.toLowerCase().includes('network error contacting api') || msg.toLowerCase().includes('failed to fetch') || msg.toLowerCase().includes('networkerror')) {

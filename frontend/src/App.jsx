@@ -7,7 +7,6 @@ import RequireAdmin from './routes/RequireAdmin.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import SignupPage from './pages/SignupPage.jsx'
 import ApiConfigPage from './pages/ApiConfigPage.jsx'
-import HomePage from './pages/HomePage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
 import GalleryPage from './pages/GalleryPage.jsx'
 import JournalPage from './pages/JournalPage.jsx'
@@ -20,16 +19,8 @@ export default function App() {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/config" element={<ApiConfigPage />} />
 
-      <Route
-        path="/"
-        element={
-          <RequireAuth>
-            <Shell />
-          </RequireAuth>
-        }
-      >
-        <Route index element={<HomePage />} />
-        <Route path="profile" element={<ProfilePage />} />
+      <Route path="/" element={<Shell />}>
+        <Route index element={<Navigate to="/journal" replace />} />
         <Route path="gallery" element={<GalleryPage />} />
         <Route path="journal" element={<JournalPage />} />
         <Route
@@ -40,9 +31,17 @@ export default function App() {
             </RequireAdmin>
           }
         />
+        <Route
+          path="profile"
+          element={
+            <RequireAuth>
+              <ProfilePage />
+            </RequireAuth>
+          }
+        />
       </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/journal" replace />} />
     </Routes>
   )
 }
